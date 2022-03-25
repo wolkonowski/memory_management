@@ -1,13 +1,18 @@
 #include <cstdio>
 #include <memory>
 #include <string>
-
+#include <cstdio>
 using ShoppingList = std::shared_ptr<std::FILE>;
-
+auto deleter = [](std::FILE* f){fclose(f);};
 ShoppingList makeFile(const char* filename, const char* flags)
 {
-    /*Edit here*/
-    return std::shared_ptr<std::FILE>();
+    try {
+    return ShoppingList(fopen(filename,flags), deleter);
+    }
+    catch (...)
+    {
+    return nullptr;
+    }
 }
 
 class Partner
@@ -15,7 +20,8 @@ class Partner
 public:
     void addToFile(std::string element)
     {
-        /*Edit here*/
+        if(shoppingList==nullptr) return;
+        fprintf(shoppingList.get(), "%s\n", element.c_str());
     }
     ShoppingList shoppingList;
 };

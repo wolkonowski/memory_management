@@ -1,6 +1,17 @@
 #include <iostream>
 #include <stdexcept>
+class KWException : public std::logic_error
+{
+public:
+using std::logic_error::what;
+KWException(const char* arg)
+:std::logic_error(arg){
+}
+virtual const char* what(){
 
+return std::logic_error::what();
+}
+};
 void validateArguments(int argc)
 {
     if(argc != 2)
@@ -18,7 +29,7 @@ public:
         std::cout << "Using resource. Passed " << *arg << std::endl;
         if (*arg == 'd')
         {
-            throw std::logic_error("Passed d. d is prohibited.");
+            throw KWException("Passed d. d is prohibited.");
         }
     }
 };
@@ -28,18 +39,16 @@ int main(int argc, char* argv[])
     validateArguments(argc);
 
     const char* argument = argv[1];
-    Resource* rsc = nullptr;
-
+    Resource* rsc = new Resource();
     try
     {
-        rsc = new Resource();
         rsc->use(argument);
-        delete rsc;
     }
-    catch (std::logic_error& e)
+    catch (KWException& e)
     {
         std::cout << e.what() << std::endl;
     }
+    delete rsc;
     return 0;
 }
 
